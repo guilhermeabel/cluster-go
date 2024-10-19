@@ -1,0 +1,91 @@
+services:
+  # mysql:
+  #   image: mysql:8.3.0
+  #   restart: always
+  #   environment:
+  #     MYSQL_DATABASE: ${MYSQL_DATABASE}
+  #     MYSQL_PORT: ${MYSQL_PORT}
+  #     MYSQL_USER: ${MYSQL_USER}
+  #     MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+  #     MYSQL_ALLOW_EMPTY_PASSWORD: yes
+  #   ports:
+  #     - "${MYSQL_PORT}:${MYSQL_PORT}"
+  #   # volumes:
+  #   #   - ../php-api/db:/docker-entrypoint-initdb.d
+  #   #   - ../php-api/db/my.cnf:/etc/mysql/my.cnf
+  #   healthcheck:
+  #     test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '0.5'
+  #         memory: 512MB
+  # redis:
+  #   image: redis:alpine
+  #   volumes:
+  #     - redis_data:/data
+  #   restart: unless-stopped
+  #   ports:
+  #     - "${REDIS_PORT}:${REDIS_PORT}"
+  #   environment:
+  #     REDIS_PASSWORD: ${REDIS_PASSWORD}
+  #   command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}"]
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "ping"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '0.3'
+  #         memory: 200MB
+  frontend:
+    build:
+      context: ../frontend
+    networks:
+      - app-network
+    volumes:
+      - ../frontend:/app
+      - /app/node_modules
+    environment:
+      CHOKIDAR_USEPOLLING: "true"
+      NODE_ENV: "development"
+    ports:
+      - "3000:3000"
+  worker:
+    build: 
+      context: ../worker
+    volumes:
+      - ../worker:/app
+      - $HOME/.aws:/root/.aws
+    networks:
+      - app-network
+    environment:
+      - AWS_SQS_QUEUE_URL=${AWS_SQS_QUEUE_URL}
+      - AWS_REGION=${AWS_REGION}	
+  api:
+    build: 
+      context: ../api
+    volumes:
+      - ../api:/app
+      - $HOME/.aws:/root/.aws
+    networks:
+      - app-network
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '0.1'
+    #       memory: 50M
+    ports:
+      - "9002:9002"
+    environment:
+      - AWS_SQS_QUEUE_URL=${AWS_SQS_QUEUE_URL}
+      - AWS_REGION=${AWS_REGION}
+volumes:
+  redis_data:
+networks:
+   app-network:
