@@ -2,9 +2,9 @@ package main
 
 import (
 	"context"
-	"flag"
 	"log"
 	"os"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
@@ -14,31 +14,38 @@ import (
 const version = "1.0.0"
 const appName = "API-SERVICE"
 
-type appConfig struct {
-	port int
-	env  string
+type EnvironmentVariables struct {
+	appName         string
+	appEnv          string
+	appVersion      string
+	appPort         int
+	messagesToFetch int
+	waitTime        int
+	messageTimeout  time.Duration
+	sqsQueue        string
+	sqsRegion       string
 }
 
 type App struct {
-	config appConfig
-	logger *log.Logger
-	sqs    *SqsConfig
-}
-
-type SqsConfig struct {
+	env       *EnvironmentVariables
+	logger    *log.Logger
 	sqsClient *sqs.Client
-	queueUrl  string
 }
 
 func main() {
+	environment := &EnvironmentVariables{
+		appName:         "API-SERVICE",
+		appEnv:          "development",
+		appPort:         9002,
+		appVersion:      "1.0.0",
+		waitTime:        10,
+		messageTimeout:  20 * time.Second,
+		messagesToFetch: 1,
+		sqsQueue:        os.Getenv("AWS_SQS_QUEUE_URL"),
+		sqsRegion:       os.Getenv("AWS_REGION"),
+	}
 
-	var cfg appConfig
-
-	flag.IntVar(&cfg.port, "port", 9002, "API server port")
-	flag.StringVar(&cfg.env, "env", "development", "Environment (development|staging|production)")
-	flag.Parse()
-
-	awsCfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(os.Getenv("AWS_REGION")))
+	awsCfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(environment.sqsRegion))
 	if err != nil {
 		log.Fatalf("unable to load AWS SDK config, %v", err)
 	}
@@ -48,15 +55,12 @@ func main() {
 	logger := log.New(log.Writer(), appName+": ", log.LstdFlags)
 
 	app := &App{
-		config: cfg,
-		logger: logger,
-		sqs: &SqsConfig{
-			sqsClient: sqsClient,
-			queueUrl:  os.Getenv("AWS_SQS_QUEUE_URL"),
-		},
+		env:       environment,
+		logger:    logger,
+		sqsClient: sqsClient,
 	}
 
-	app.logger.Printf("Initializing, port: %d", app.config.port)
+	app.logger.Printf("Initializing, port: %d", app.env.appPort)
 
 	err = app.NewServer().ListenAndServe()
 

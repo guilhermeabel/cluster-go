@@ -17,7 +17,7 @@ func (app *App) NewServer() *http.Server {
 	)
 
 	return &http.Server{
-		Addr:         fmt.Sprintf(":%d", app.config.port),
+		Addr:         fmt.Sprintf(":%d", app.env.appPort),
 		Handler:      middlewareChain(router),
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
@@ -28,7 +28,6 @@ func (app *App) NewServer() *http.Server {
 func (app *App) loadRoutes(mux *http.ServeMux) http.HandlerFunc {
 	mux.HandleFunc("/v1/healthcheck", app.healthcheckHandler)
 	mux.HandleFunc("/v1/echo", app.echoHandler)
-	mux.HandleFunc("/v1/ping", app.pingHandler)
 
 	return mux.ServeHTTP
 }
