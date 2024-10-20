@@ -46,6 +46,7 @@ services:
   frontend:
     build:
       context: ../frontend
+      dockerfile: Dockerfile.dev
     networks:
       - app-network
     volumes:
@@ -59,6 +60,7 @@ services:
   worker:
     build: 
       context: ../worker
+      dockerfile: Dockerfile.dev
     volumes:
       - ../worker:/app
       - $HOME/.aws:/root/.aws
@@ -70,6 +72,7 @@ services:
   api:
     build: 
       context: ../api
+      dockerfile: Dockerfile.dev
     volumes:
       - ../api:/app
       - $HOME/.aws:/root/.aws
