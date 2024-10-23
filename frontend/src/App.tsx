@@ -1,17 +1,18 @@
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import axios from 'axios';
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react';
 
 const fetchData = async (url: string) => {
-	const response = await fetch(url);
-	const data = await response.json();
-	return data;
+	const response = await axios.get(url);
+	return response.data
 };
 
 function App() {
 	const [url, setUrl] = useState<string | null>(null);
+	const backendUrl = import.meta.env.VITE_BACKEND_URL as string;
 
 	const { data, isLoading, refetch } = useQuery(
 		{
@@ -22,17 +23,17 @@ function App() {
 	);
 
 	const getHealthcheck = () => {
-		setUrl('http://localhost:9002/v1/healthcheck');
+		setUrl(`${backendUrl}/v1/healthcheck`);
 		refetch();
 	};
 
 	const getEcho = () => {
-		setUrl('http://localhost:9002/v1/echo');
+		setUrl(`${backendUrl}/v1/echo`);
 		refetch();
 	}
 
 	const getPing = () => {
-		setUrl('http://localhost:9002/v1/ping');
+		setUrl(`${backendUrl}/v1/ping`);
 		refetch();
 	}
 
@@ -60,9 +61,9 @@ function App() {
 						request 3
 					</button>
 				</div>
-				{url && data && <div style={{ backgroundColor: "#111", borderRadius: "9px", padding: "30px" }}>
+				{url && data ? <div style={{ backgroundColor: "#111", borderRadius: "9px", padding: "30px" }}>
 					<pre>{JSON.stringify(data, null, 2)}</pre>
-				</div>}
+				</div> : <></>}
 				<div style={{ minHeight: "30px", margin: "15px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
 					{isLoading && <>Loading</>}
 				</div>
