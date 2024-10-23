@@ -14,6 +14,7 @@ func (app *App) NewServer() *http.Server {
 		app.logRequest,
 		app.secureHeaders,
 		app.enableCors,
+		app.noCache,
 	)
 
 	return &http.Server{
@@ -26,8 +27,8 @@ func (app *App) NewServer() *http.Server {
 }
 
 func (app *App) loadRoutes(mux *http.ServeMux) http.HandlerFunc {
-	mux.HandleFunc("/v1/healthcheck", app.healthcheckHandler)
-	mux.HandleFunc("/v1/echo", app.echoHandler)
+	mux.HandleFunc("GET /api/v1/healthcheck", app.healthcheckHandler)
+	mux.HandleFunc("GET /api/v1/echo", app.echoHandler)
 
 	return mux.ServeHTTP
 }
