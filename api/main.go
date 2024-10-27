@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/config"
@@ -27,9 +28,11 @@ type EnvironmentVariables struct {
 }
 
 type App struct {
-	env       *EnvironmentVariables
-	logger    *log.Logger
-	sqsClient *sqs.Client
+	env        *EnvironmentVariables
+	logger     *log.Logger
+	sqsClient  *sqs.Client
+	mu         sync.Mutex
+	lastAccess map[string]time.Time
 }
 
 func main() {
@@ -51,13 +54,15 @@ func main() {
 	}
 
 	sqsClient := sqs.NewFromConfig(awsCfg)
+	lastAccess := make(map[string]time.Time)
 
-	logger := log.New(log.Writer(), appName+": ", log.LstdFlags)
+	logger := log.New(log.Writer(), "\n"+appName+": ", log.LstdFlags)
 
 	app := &App{
-		env:       environment,
-		logger:    logger,
-		sqsClient: sqsClient,
+		env:        environment,
+		logger:     logger,
+		sqsClient:  sqsClient,
+		lastAccess: lastAccess,
 	}
 
 	app.logger.Printf("Initializing, port: %d", app.env.appPort)

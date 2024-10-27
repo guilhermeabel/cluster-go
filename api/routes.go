@@ -12,9 +12,10 @@ func (app *App) NewServer() *http.Server {
 	middlewareChain := NewChain(
 		app.recoverPanic,
 		app.logRequest,
+		app.rateLimiter,
 		app.secureHeaders,
-		app.enableCors,
 		app.noCache,
+		app.enableCors,
 	)
 
 	return &http.Server{

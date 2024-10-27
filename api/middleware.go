@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"time"
 )
 
 func (app *App) secureHeaders(next http.HandlerFunc) http.HandlerFunc {
@@ -48,4 +49,23 @@ func (app *App) noCache(next http.HandlerFunc) http.HandlerFunc {
 		w.Header().Set("Expires", "0")
 		next.ServeHTTP(w, r)
 	})
+}
+
+func (app *App) rateLimiter(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		app.mu.Lock()
+		defer app.mu.Unlock()
+
+		clientIP := r.RemoteAddr
+		lastRequest, found := app.lastAccess[clientIP]
+
+		if found && time.Since(lastRequest) < time.Second {
+			http.Error(w, "Rate limit exceeded. Please try again later.", http.StatusTooManyRequests)
+			app.logger.Printf("Rate limit exceeded for %s", clientIP)
+			return
+		}
+
+		app.lastAccess[clientIP] = time.Now()
+		next.ServeHTTP(w, r)
+	}
 }
