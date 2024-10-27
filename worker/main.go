@@ -21,6 +21,7 @@ type EnvironmentVariables struct {
 	messageTimeout  time.Duration
 	sqsQueue        string
 	sqsRegion       string
+	sleepTime       time.Duration
 }
 
 type App struct {
@@ -39,6 +40,7 @@ func main() {
 		messagesToFetch: 1,
 		sqsQueue:        os.Getenv("AWS_SQS_QUEUE_URL"),
 		sqsRegion:       os.Getenv("AWS_REGION"),
+		sleepTime:       1 * time.Second,
 	}
 
 	flag.StringVar(&environment.appEnv, "env", "development", "Environment (development|staging|production)")
@@ -100,7 +102,8 @@ func (app *App) fetchAndProcessMessages(client *sqs.Client) error {
 		if err != nil {
 			app.logger.Printf("Failed to delete message: %v\n", err)
 		}
-		time.Sleep(5 * time.Second)
+
+		time.Sleep(app.env.sleepTime)
 	}
 
 	return nil
