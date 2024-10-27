@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: simple-html-config
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Simple HTML Page</title>
+    </head>
+    <body>
+        <h1>Hello from Simple HTML Page!</h1>
+        <button id="myButton">Click Me!</button>
+
+        <script>
+            document.getElementById('myButton').addEventListener('click', function() {
+                fetch('/api/v1/healthcheck')
+                    .then(response => response.json())
+                    .then(data => console.log(data));
+            });
+        </script>
+    </body>
+    </html>
+  nginx.conf: 
+    server {
+        listen 80;
+        location / {
+            add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate";
+            add_header Pragma "no-cache";
+            add_header Expires "0";
+            root /usr/share/nginx/html;
+            index index.html; 
+        }
+    }
+    

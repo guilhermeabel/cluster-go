@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simple-html-nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: simple-html-nginx
+  template:
+    metadata:
+      labels:
+        app: simple-html-nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+        volumeMounts:
+        - name: html-volume
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: html-volume
+        configMap:
+          name: simple-html-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: simple-html-nginx-service
+spec:
+  type: NodePort
+  selector:
+    app: simple-html-nginx
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80

@@ -1,0 +1,47 @@
+# Worker Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      containers:
+      - name: worker
+        image: registry.digitalocean.com/abel/worker:latest
+        env:
+        - name: AWS_REGION
+          valueFrom:
+            secretKeyRef:
+              name: secrets
+              key: AWS_REGION
+        - name: AWS_SQS_QUEUE_URL
+          valueFrom:
+            secretKeyRef:
+              name: secrets
+              key: AWS_SQS_QUEUE_URL
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: secrets
+              key: AWS_ACCESS_KEY_ID
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: secrets
+              key: AWS_SECRET_ACCESS_KEY
+        resources:
+          limits:
+            memory: "2512Mi"
+            cpu: "500m"
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+---
