@@ -1,72 +1,35 @@
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 import axios from 'axios';
-import { useQuery } from '@tanstack/react-query'
-import { useState } from 'react';
+import React from 'react';
 
-const fetchData = async (url: string) => {
-	const response = await axios.get(url);
-	return response.data
-};
+
 
 function App() {
-	const [url, setUrl] = useState<string | null>(null);
-	const backendUrl = import.meta.env.VITE_BACKEND_URL as string;
+	const [data, setData] = React.useState<unknown>();
 
-	const { data, isLoading, refetch } = useQuery(
-		{
-			queryKey: ['fetchData', url],
-			queryFn: () => fetchData(url!),
-			enabled: false,
-		}
-	);
-
-	const getHealthcheck = () => {
-		setUrl(`${backendUrl}/v1/healthcheck`);
-		refetch();
+	const fetchData = async (url: string) => {
+		const backendUrl = (import.meta.env.VITE_BACKEND_URL || "http://localhost:9002/api/") as string;
+		const response = await axios.get(backendUrl + url);
+		setData(response.data);
 	};
-
-	const getEcho = () => {
-		setUrl(`${backendUrl}/v1/echo`);
-		refetch();
-	}
-
-	const getPing = () => {
-		setUrl(`${backendUrl}/v1/ping`);
-		refetch();
-	}
-
 
 	return (
 		<>
-			<div>
-				<a href="https://vitejs.dev" target="_blank">
-					<img src={viteLogo} className="logo" alt="Vite logo" />
-				</a>
-				<a href="https://react.dev" target="_blank">
-					<img src={reactLogo} className="logo react" alt="React logo" />
-				</a>
-			</div>
-			<h1>Vite + React</h1>
 			<div style={{ minHeight: "350px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
 				<div className="card" style={{ "display": "flex", "gap": "40px" }}>
-					<button onClick={getHealthcheck}>
-						request 1
+					<button onClick={() => fetchData("v1/healthcheck")}>
+						healthcheck
 					</button>
-					<button onClick={getEcho}>
-						request 2
+					<button onClick={() => fetchData("v1/echo")}>
+						send to queue
 					</button>
-					<button onClick={getPing}>
+					{/* <button onClick={}>
 						request 3
-					</button>
+					</button> */}
 				</div>
-				{url && data ? <div style={{ backgroundColor: "#111", borderRadius: "9px", padding: "30px" }}>
-					<pre>{JSON.stringify(data, null, 2)}</pre>
+				{data ? <div style={{ backgroundColor: "#111", borderRadius: "9px", padding: "30px", maxWidth: "300px" }}>
+					<pre style={{ "overflow": "scroll" }}>{JSON.stringify(data, null, 2)}</pre>
 				</div> : <></>}
-				<div style={{ minHeight: "30px", margin: "15px", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-					{isLoading && <>Loading</>}
-				</div>
 			</div>
 		</>
 	)
