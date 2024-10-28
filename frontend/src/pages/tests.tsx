@@ -1,13 +1,10 @@
-import './App.css'
 import axios from 'axios';
 import React from 'react';
-import { Container } from './components/ui/container';
-import { Button } from './components/ui/button';
+import { Container } from '../components/ui/container';
+import { Button } from '../components/ui/button';
 import { toast } from "sonner"
-import { SidebarTrigger } from './components/ui/sidebar';
-import { Textarea } from "@/components/ui/textarea"
 
-function App() {
+const Test = () => {
 	const [data, setData] = React.useState<unknown>();
 
 	const fetchData = async (url: string) => {
@@ -24,10 +21,8 @@ function App() {
 	};
 
 	return (<Container>
+		<h1 className="text-2xl font-semibold text-gray-800 mb-5">Testing 🧪</h1>
 		<div className='flex flex-col flex-between'>
-			<div className='flex justify-end'>
-				<SidebarTrigger className='float-right' />
-			</div>
 			<div className="flex gap-3 flex-row">
 				<Button className='w-32' onClick={() => fetchData("v1/healthcheck")}>
 					healthcheck
@@ -37,7 +32,9 @@ function App() {
 				</Button>
 			</div>
 			<div className="flex gap-3 flex-row mt-3 w-64">
-				<Textarea value={JSON.stringify(data, null, 2)} disabled rows={5} />
+				<pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4 min-w-[340px] min-h-[540px]">
+					<code className="text-white">{JSON.stringify(data, null, 2)}</code>
+				</pre>
 			</div>
 		</div>
 
@@ -46,4 +43,4 @@ function App() {
 	)
 }
 
-export default App
+export default Test

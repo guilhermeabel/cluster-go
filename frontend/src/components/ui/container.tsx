@@ -5,7 +5,7 @@ const Container = React.forwardRef<HTMLDivElement, React.AllHTMLAttributes<HTMLD
 		return (
 			<div
 				ref={ref}
-				className="container mx-auto px-4 sm:px-6 lg:px-8"
+				className="container px-2 w-full mx-auto"
 				{...props}
 			>
 				{children}
@@ -13,6 +13,7 @@ const Container = React.forwardRef<HTMLDivElement, React.AllHTMLAttributes<HTMLD
 		)
 	}
 )
+
 Container.displayName = "Container"
 
 export { Container }

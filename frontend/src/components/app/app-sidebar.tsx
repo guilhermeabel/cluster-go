@@ -1,7 +1,7 @@
-import { Home, MessageSquare, TestTubeDiagonal, Contact } from "lucide-react"
+import { CircleDollarSign, MessageSquare, TestTubeDiagonal, Contact, User, Settings, Home, ChevronUp } from "lucide-react"
 
 import {
-	Sidebar,
+	Sidebar as InternalSidebar,
 	SidebarContent,
 	SidebarFooter,
 	SidebarGroup,
@@ -11,18 +11,59 @@ import {
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
+	SidebarSeparator,
 } from "@/components/ui/sidebar"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
-export function AppSidebar() {
+const Sidebar = () => {
 	return (
-		<Sidebar>
-			<SidebarHeader />
+		<InternalSidebar collapsible="icon">
+			<SidebarHeader>
+
+			</SidebarHeader>
 			<SidebarContent>
 				<SidebarGroup>
-					<SidebarGroupLabel>Welcome</SidebarGroupLabel>
+					<SidebarGroupLabel>Menu</SidebarGroupLabel>
 					<SidebarGroupContent>
 						<SidebarMenu>
-							{items.map((item) => (
+							{defaultItems.map((item) => (
+								<SidebarMenuItem key={item.title}>
+									<SidebarMenuButton asChild>
+										<a href={item.url}>
+											<item.icon />
+											<span>{item.title}</span>
+										</a>
+									</SidebarMenuButton>
+								</SidebarMenuItem>
+							))}
+						</SidebarMenu>
+					</SidebarGroupContent>
+				</SidebarGroup>
+				<SidebarSeparator />
+				<SidebarGroup>
+					<SidebarGroupLabel>Featured</SidebarGroupLabel>
+					<SidebarGroupContent>
+						<SidebarMenu>
+							{featuredItems.map((item) => (
+								<SidebarMenuItem key={item.title}>
+									<SidebarMenuButton asChild>
+										<a href={item.url}>
+											<item.icon />
+											<span>{item.title}</span>
+										</a>
+									</SidebarMenuButton>
+								</SidebarMenuItem>
+							))}
+						</SidebarMenu>
+					</SidebarGroupContent>
+				</SidebarGroup>
+				<SidebarSeparator />
+				<SidebarGroup>
+					<SidebarGroupLabel>System</SidebarGroupLabel>
+					<SidebarGroupContent>
+						<SidebarMenu>
+							{systemItems.map((item) => (
 								<SidebarMenuItem key={item.title}>
 									<SidebarMenuButton asChild>
 										<a href={item.url}>
@@ -36,12 +77,42 @@ export function AppSidebar() {
 					</SidebarGroupContent>
 				</SidebarGroup>
 			</SidebarContent>
-			<SidebarFooter />
-		</Sidebar>
+			<SidebarFooter>
+				<SidebarMenu>
+					<SidebarMenuItem>
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<SidebarMenuButton size="lg">
+									<Avatar>
+										<AvatarImage src="https://github.com/shadcn.png" className="flex justify-center	items-center" />
+										<AvatarFallback>U</AvatarFallback>
+									</Avatar> Username
+									<ChevronUp className="ml-auto" />
+								</SidebarMenuButton>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent
+								side="top"
+								className="w-[--radix-popper-anchor-width]"
+							>
+								<DropdownMenuItem>
+									<span>Account</span>
+								</DropdownMenuItem>
+								<DropdownMenuItem>
+									<span>Billing</span>
+								</DropdownMenuItem>
+								<DropdownMenuItem>
+									<span>Sign out</span>
+								</DropdownMenuItem>
+							</DropdownMenuContent>
+						</DropdownMenu>
+					</SidebarMenuItem>
+				</SidebarMenu>
+			</SidebarFooter>
+		</InternalSidebar>
 	)
 }
 
-const items = [
+const defaultItems = [
 	{
 		title: "Home",
 		url: "/",
@@ -57,9 +128,42 @@ const items = [
 		url: "/contact",
 		icon: MessageSquare,
 	},
+]
+
+const featuredItems = [
+	{
+		title: "Contacts",
+		url: "/contacts",
+		icon: Contact,
+	},
+	{
+		title: "Payments",
+		url: "/payments",
+		icon: CircleDollarSign,
+	},
+	{
+		title: "Messages",
+		url: "/messages",
+		icon: MessageSquare,
+	},
+]
+
+const systemItems = [
 	{
 		title: "Tests",
 		url: "tests",
 		icon: TestTubeDiagonal,
 	},
+	{
+		title: "Users",
+		url: "/users",
+		icon: User,
+	},
+	{
+		title: "Settings",
+		url: "/system-settings",
+		icon: Settings,
+	},
 ]
+
+export default Sidebar
