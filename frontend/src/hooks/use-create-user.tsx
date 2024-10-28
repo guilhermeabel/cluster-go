@@ -1,4 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
+import useApiUrl from "./use-api-url";
 
 type CreateUserInput = {
 	name: string;
@@ -8,13 +9,11 @@ type CreateUserInput = {
 };
 
 const useCreateUser = () => {
+	const apiUrl = useApiUrl();
 	const mutation = useMutation({
 		mutationKey: ["createUser"],
 		mutationFn: async (input: CreateUserInput) => {
-			const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:9002/api/";
-
-			console.log(input);
-			const response = await fetch(`${backendUrl}v1/user`, {
+			const response = await fetch(`${apiUrl}v1/user`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",

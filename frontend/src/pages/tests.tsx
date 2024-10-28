@@ -3,15 +3,16 @@ import React from 'react';
 import { Container } from '../components/ui/container';
 import { Button } from '../components/ui/button';
 import { toast } from "sonner"
+import useApiUrl from '@/hooks/use-api-url';
 
 const Test = () => {
 	const [data, setData] = React.useState<unknown>();
+	const apiUrl = useApiUrl();
 
 	const fetchData = async (url: string) => {
 		try {
 			toast("Fetching...")
-			const backendUrl = (import.meta.env.VITE_BACKEND_URL || "http://localhost:9002/api/") as string;
-			const response = await axios.get(backendUrl + url);
+			const response = await axios.get(apiUrl + url);
 			setData(response.data);
 			toast.success("Success")
 		} catch (error) {

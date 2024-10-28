@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios"; // Ensure axios is imported
+import axios from "axios";
+import useApiUrl from "./use-api-url";
 
 type User = {
 	ID: number;
@@ -9,12 +10,12 @@ type User = {
 };
 
 const useQueryUsers = () => {
+	const apiUrl = useApiUrl();
 	return useQuery<User[], Error>({
 		queryKey: ["users"],
 		queryFn: async () => {
-			const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:9002/api/";
 			try {
-				const response = await axios.get<User[]>(`${backendUrl}v1/users`);
+				const response = await axios.get<User[]>(`${apiUrl}v1/users`);
 				return response.data;
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			} catch (error: any) {

@@ -212,6 +212,7 @@ const SystemUsers = () => {
 			</DrawerContent>
 		</Drawer>
 
+		<h2 className="text-xl font-semibold text-gray-800 mt-10 mb-5">Users</h2>
 		<UserList />
 	</>)
 }
