@@ -30,6 +30,10 @@ func (app *App) NewServer() *http.Server {
 func (app *App) loadRoutes(mux *http.ServeMux) http.HandlerFunc {
 	mux.HandleFunc("GET /api/v1/healthcheck", app.healthcheckHandler)
 	mux.HandleFunc("GET /api/v1/echo", app.echoHandler)
+	mux.HandleFunc("GET /api/v1/users", app.getUsersHandler)
+	mux.HandleFunc("POST /api/v1/user", app.createUserHandler)
+	mux.HandleFunc("GET /api/v1/user/contacts", app.getUserContactsHandler)
+	mux.HandleFunc("POST /api/v1/user/contact", app.createUserContactHandler)
 
 	return mux.ServeHTTP
 }

@@ -1,7 +1,11 @@
 package main
 
 import (
+	"api/internal/models"
 	"context"
+	"database/sql"
+	"flag"
+	"fmt"
 	"log"
 	"os"
 	"sync"
@@ -33,6 +37,7 @@ type App struct {
 	sqsClient  *sqs.Client
 	mu         sync.Mutex
 	lastAccess map[string]time.Time
+	users      *models.UserModel
 }
 
 func main() {
@@ -58,11 +63,24 @@ func main() {
 
 	logger := log.New(log.Writer(), "\n"+appName+": ", log.LstdFlags)
 
+	dsn := flag.String("dsn", os.Getenv("MYSQL_USER")+":"+os.Getenv("MYSQL_PASSWORD")+"@tcp("+os.Getenv("MYSQL_HOST")+":"+os.Getenv("MYSQL_PORT")+")/"+os.Getenv("MYSQL_DATABASE")+"?parseTime=true", "MySQL data source name")
+	flag.Parse()
+
+	fmt.Printf("DSN: %s\n", *dsn)
+
+	db, err := openDB(*dsn)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer db.Close()
+
 	app := &App{
 		env:        environment,
 		logger:     logger,
 		sqsClient:  sqsClient,
 		lastAccess: lastAccess,
+		users:      &models.UserModel{DB: db},
 	}
 
 	app.logger.Printf("Initializing, port: %d", app.env.appPort)
@@ -106,4 +124,25 @@ func getRandomWord() string {
 
 func getRandomNumber(min, max int) int {
 	return min + rand.Intn(max-min)
+}
+
+func openDB(dsn string) (*sql.DB, error) {
+	var err error
+
+	for i := 0; i < 5; i++ {
+		db, err := sql.Open("mysql", dsn)
+		if err != nil {
+			return nil, err
+		}
+
+		err = db.Ping()
+		if err == nil {
+			return db, nil
+		}
+
+		db.Close()
+		time.Sleep(time.Second)
+	}
+
+	return nil, fmt.Errorf("cannot connect to database: %v", err)
 }
