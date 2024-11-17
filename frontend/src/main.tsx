@@ -14,37 +14,62 @@ import { Container } from './components/ui/container.tsx'
 import Test from './pages/tests.tsx';
 import UserContacts from './pages/user-contacts.tsx';
 import SystemUsers from './pages/users.tsx';
+import Invoices from './pages/user-receivables.tsx';
+import Expenses from './pages/user-payables.tsx';
 
 const queryClient = new QueryClient()
 
+const loadBasicRoutes = () => {
+	return [
+		{
+			path: "/",
+			element: <div>Home</div>,
+		},
+		{
+			path: "/about",
+			element: <div>About</div>,
+		},
+		{
+			path: "/contact",
+			element: <div>Contact</div>,
+		},
+	]
+}
+
+const loadSystemRoutesRoutes = () => {
+	return [
+		{
+			path: "tests",
+			element: <Test />,
+		},
+		{
+			path: "/users",
+			element: <SystemUsers />,
+		}
+	]
+}
+
+const loadFeaturedRoutes = () => {
+	return [
+		{
+			path: "/contacts",
+			element: <UserContacts />,
+		},
+		{
+			path: "/invoices",
+			element: <Invoices />,
+		},
+		{
+			path: "/expenses",
+			element: <Expenses />,
+		},
+	]
+}
+
 const router = createBrowserRouter([
-	// Basic Routes
-	{
-		path: "/",
-		element: <div>Home</div>,
-	},
-	{
-		path: "/about",
-		element: <div>About</div>,
-	},
-	{
-		path: "/contact",
-		element: <div>Contact</div>,
-	},
-	{
-		path: "tests",
-		element: <Test />,
-	},
-	// Features
-	{
-		path: "/contacts",
-		element: <UserContacts />,
-	},
-	// System
-	{
-		path: "/users",
-		element: <SystemUsers />,
-	}
+	...loadBasicRoutes(),
+	...loadFeaturedRoutes(),
+	...loadSystemRoutesRoutes(),
 ]);
 
 createRoot(document.getElementById('root')!).render(

@@ -1,4 +1,4 @@
-import { CircleDollarSign, MessageSquare, TestTubeDiagonal, Contact, User, Settings, Home, ChevronUp } from "lucide-react"
+import { CircleDollarSign, MessageSquare, TestTubeDiagonal, Contact, User, Settings, Home, ChevronUp, Receipt, HandCoins } from "lucide-react"
 
 import {
 	Sidebar as InternalSidebar,
@@ -137,14 +137,24 @@ const featuredItems = [
 		icon: Contact,
 	},
 	{
-		title: "Payments",
-		url: "/payments",
-		icon: CircleDollarSign,
-	},
-	{
 		title: "Messages",
 		url: "/messages",
 		icon: MessageSquare,
+	},
+	{
+		title: "Finances",
+		url: "/finances",
+		icon: CircleDollarSign,
+	},
+	{
+		title: "Invoices",
+		url: "/invoices",
+		icon: Receipt,
+	},
+	{
+		title: "Expenses",
+		url: "/expenses",
+		icon: HandCoins,
 	},
 ]
 
