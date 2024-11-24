@@ -11,8 +11,6 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: yes
     networks:
       - app-network
-    ports:
-      - "${MYSQL_PORT}:${MYSQL_PORT}"
     volumes:
       - ../mysql:/docker-entrypoint-initdb.d
       - ../mysql/my.cnf:/etc/mysql/my.cnf
@@ -92,6 +90,7 @@ services:
     environment:
       AWS_SQS_QUEUE_URL: ${AWS_SQS_QUEUE_URL}
       AWS_REGION: ${AWS_REGION}
+      AWS_PROFILE: ${AWS_PROFILE}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_PORT: ${MYSQL_PORT}
       MYSQL_USER: ${MYSQL_USER}
